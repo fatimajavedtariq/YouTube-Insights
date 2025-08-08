@@ -1,2 +1,7 @@
 streamlit
 yt-dlp
+dotenv
+tiktoken
+openai
+langchain
+langchain-community
