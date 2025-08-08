@@ -1,15 +1,15 @@
 import os
 import yt_dlp
+import tempfile
+import shutil
 
-def download_youtube_audio(url, output_path='downloads'):
-    if not os.path.exists(output_path):
-        os.makedirs(output_path)
-
+def download_youtube_audio(url):
+   with tempfile.TemporaryDirectory() as tmpdir:
     ydl_opts = {
         'format': 'bestaudio/best',
-        'outtmpl': os.path.join(output_path, '%(title)s.%(ext)s'),
-        'external_downloader': 'aria2c',
-        'external_downloader_args': ['-x', '16', '-k', '1M'],
+        'outtmpl': os.path.join(tmpdir, '%(title)s.%(ext)s'),
+        """'external_downloader': 'aria2c',
+        'external_downloader_args': ['-x', '16', '-k', '1M'],"""
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',            
@@ -25,6 +25,11 @@ def download_youtube_audio(url, output_path='downloads'):
         elif '_filename' in info:
             filename = info['_filename']
         else:
-            # fallback: try to construct filename
-            filename = os.path.join(output_path, info['title'].replace(" ", "_") + ".mp3")
-        return filename
+            filename = None
+
+        if filename:
+          temp_audio = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
+          shutil.copyfile(filename, temp_audio.name)
+          return temp_audio.name
+        else:
+            raise Exception("Audio file not found.")

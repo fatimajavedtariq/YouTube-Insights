@@ -3,7 +3,7 @@ import os
 import json
 from src.utils import format_timestamp
 
-def transcribe(audio_path, output_dir="transcriptions"):
+def transcribe(audio_path, output_dir="transcriptions", cleanup_temp=True):
     os.makedirs(output_dir, exist_ok=True)
 
     # Load the model
@@ -28,4 +28,12 @@ def transcribe(audio_path, output_dir="transcriptions"):
         json.dump(transcription_data, f, indent=2, ensure_ascii=False)
 
     print(f"Transcription saved to {output_path}")
+
+    # Optionally delete the temp audio file
+    if cleanup_temp:
+        try:
+            os.remove(audio_path)
+        except Exception as e:
+            print(f"Warning: Could not delete temp file {audio_path}: {e}")
+
     return output_path
