@@ -4,32 +4,33 @@ import tempfile
 import shutil
 
 def download_youtube_audio(url):
-   with tempfile.TemporaryDirectory() as tmpdir:
+    tmpdir = tempfile.mkdtemp()
+
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': os.path.join(tmpdir, '%(title)s.%(ext)s'),
-        """'external_downloader': 'aria2c',
-        'external_downloader_args': ['-x', '16', '-k', '1M'],"""
+        'restrictfilenames': True,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',            
+            'preferredcodec': 'mp3',
         }],
-        'quiet': True,
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
-        # Find the actual output file after postprocessing
-        if 'requested_downloads' in info and info['requested_downloads']:
-            filename = info['requested_downloads'][0]['filepath']
-        elif '_filename' in info:
-            filename = info['_filename']
-        else:
-            filename = None
+        file_path = ydl.prepare_filename(info)  # This gets the actual file path
+        file_path = os.path.splitext(file_path)[0] + ".mp3"  # Ensure mp3 extension
 
-        if filename:
-          temp_audio = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
-          shutil.copyfile(filename, temp_audio.name)
-          return temp_audio.name
-        else:
-            raise Exception("Audio file not found.")
+    metadata = {
+        "title": info.get("title"),
+        "description": info.get("description"),
+        "uploader": info.get("uploader"),
+        "upload_date": info.get("upload_date"),
+        "duration": info.get("duration"),
+        "view_count": info.get("view_count"),
+        "like_count": info.get("like_count"),
+        "channel_id": info.get("channel_id"),
+        "webpage_url": info.get("webpage_url")
+    }
+
+    return file_path, metadata, tmpdir

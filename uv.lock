@@ -510,6 +510,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/59/a8/4677014e771ed1591a87b63a2392ce6923baf807193deef302dcfde17542/huggingface_hub-0.34.3-py3-none-any.whl", hash = "sha256:5444550099e2d86e68b2898b09e85878fbd788fc2957b506c6a79ce060e39492", size = 558847, upload-time = "2025-07-29T08:38:51.904Z" },
 ]
 
+[package.optional-dependencies]
+hf-xet = [
+    { name = "hf-xet" },
+]
+
 [[package]]
 name = "humanfriendly"
 version = "10.0"
@@ -2052,12 +2057,14 @@ dependencies = [
     { name = "dotenv" },
     { name = "faiss-cpu" },
     { name = "faster-whisper" },
+    { name = "huggingface-hub", extra = ["hf-xet"] },
     { name = "langchain" },
     { name = "langchain-community" },
     { name = "openai" },
     { name = "sentence-transformers" },
     { name = "streamlit" },
     { name = "tiktoken" },
+    { name = "transformers" },
     { name = "yt-dlp" },
 ]
 
@@ -2066,12 +2073,14 @@ requires-dist = [
     { name = "dotenv", specifier = ">=0.9.9" },
     { name = "faiss-cpu", specifier = ">=1.11.0.post1" },
     { name = "faster-whisper", specifier = ">=1.2.0" },
+    { name = "huggingface-hub", extras = ["hf-xet"], specifier = ">=0.34.3" },
     { name = "langchain", specifier = ">=0.3.27" },
     { name = "langchain-community", specifier = ">=0.3.27" },
     { name = "openai", specifier = ">=1.99.3" },
     { name = "sentence-transformers", specifier = ">=5.1.0" },
     { name = "streamlit", specifier = ">=1.48.0" },
     { name = "tiktoken", specifier = ">=0.10.0" },
+    { name = "transformers", specifier = ">=4.55.0" },
     { name = "yt-dlp", specifier = ">=2025.7.21" },
 ]
 

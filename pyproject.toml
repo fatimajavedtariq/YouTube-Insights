@@ -8,11 +8,13 @@ dependencies = [
     "dotenv>=0.9.9",
     "faiss-cpu>=1.11.0.post1",
     "faster-whisper>=1.2.0",
+    "huggingface-hub[hf-xet]>=0.34.3",
     "langchain>=0.3.27",
     "langchain-community>=0.3.27",
     "openai>=1.99.3",
     "sentence-transformers>=5.1.0",
     "streamlit>=1.48.0",
     "tiktoken>=0.10.0",
+    "transformers>=4.55.0",
     "yt-dlp>=2025.7.21",
 ]
