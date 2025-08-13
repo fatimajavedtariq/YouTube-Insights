@@ -10,5 +10,5 @@ def is_valid_youtube_url(url):
 
 # Function to format timestamps in MM:SS format
 def format_timestamp(seconds):
-    minutes, secs = divmod(int(seconds), 60)
+    hours, minutes, secs = divmod(int(seconds), 60, 60)
     return f"{minutes}:{secs:02d}"

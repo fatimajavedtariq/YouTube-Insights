@@ -4,16 +4,6 @@ from langchain.schema import Document
 
 def create_vectorstore_from_transcription(transcription_data, metadata):
     docs = []
-
-    docs.append(Document(
-        page_content=(
-            f"Title: {metadata.get('title', '')}\n"
-            f"Description: {metadata.get('description', '')}\n"
-            f"Uploader: {metadata.get('uploader', '')}\n"
-            f"URL: {metadata.get('webpage_url', '')}"
-        ),
-        metadata={"type": "video_metadata"}
-    ))
     
     for idx, seg in enumerate(transcription_data):
         if seg.get("text") and seg["text"].strip():

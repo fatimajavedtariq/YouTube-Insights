@@ -1,7 +1,6 @@
 from faster_whisper import WhisperModel
 import streamlit as st
 from openai import OpenAI
-from src.utils import format_timestamp
 
 def transcribe(audio_path, apikey=None, use_openai_whisper=False, cleanup_temp=True):
     if use_openai_whisper:
@@ -20,8 +19,8 @@ def transcribe(audio_path, apikey=None, use_openai_whisper=False, cleanup_temp=T
         transcription_data = []
         for segment in response.segments:
             transcription_data.append({
-                "start": format_timestamp(segment.start),
-                "end": format_timestamp(segment.end),
+                "start": segment.start,
+                "end": segment.end,
                 "text": segment.text
             })
     else:
@@ -32,8 +31,8 @@ def transcribe(audio_path, apikey=None, use_openai_whisper=False, cleanup_temp=T
         transcription_data = []
         for segment in segments:
             transcription_data.append({
-                "start": format_timestamp(segment.start),
-                "end": format_timestamp(segment.end),
+                "start": segment.start,
+                "end": segment.end,
                 "text": segment.text
             })
 
