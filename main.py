@@ -15,23 +15,41 @@ def main():
     st.sidebar.title("🔑 Configuration")
 
     # Session state setup
-    for key in ["messages", "vectorstore", "qa_chain", "transcription_data", "memory", "metadata"]:
+    for key in ["messages", "vectorstore", "qa_chain", "transcription_data", "memory", "metadata", "transcription"]:
         if key not in st.session_state:
             st.session_state[key] = [] if key == "messages" else None
 
     # Sidebar inputs
-    url = st.sidebar.text_input("Enter YouTube Video URL", placeholder="https://www.youtube.com/watch?v=example")
-    API_KEY = st.sidebar.text_input("OpenAI API Key", type="password", placeholder="sk-...")
-    use_openai_whisper = st.sidebar.checkbox("Use OpenAI Whisper for transcription (more accurate)", value=False)
+    url = st.sidebar.text_input("YouTube Video URL", placeholder="https://www.youtube.com/watch?v=example")
+    st.session_state.API_KEY = st.sidebar.text_input("OpenAI API Key", type="password", placeholder="sk-...")
+    transcription_option = st.sidebar.radio(
+    "Transcription Method",
+    horizontal=True,
+    help="Choose between local Whisper (free) or OpenAI Whisper (paid)",
+    options=["Local Whisper", "OpenAI Whisper"]
+)
+
+    use_openai_whisper = transcription_option ==  "OpenAI Whisper"
     process_button = st.sidebar.button(
         "Process Video",
-        disabled=not (url and API_KEY),
-        help="Enter URL and API Key to enable"
+        disabled=not (url and st.session_state.API_KEY),
+        help="Enter URL and API Key to enable",
+        use_container_width=True
     )
 
     # Process video
     if process_button and st.session_state.vectorstore is None:
-        process_video(url, API_KEY, use_openai_whisper)
+        process_video(url, st.session_state.API_KEY, use_openai_whisper)
+
+    if st.session_state.transcription_data:
+        with st.expander("Video Transcription", expanded=False):
+            if "transcription" not in st.session_state:
+                st.session_state.transcription = st.session_state.transcription_data
+            
+            for segment in st.session_state.transcription:
+                start = segment['start']
+                end = segment['end']
+                st.markdown(f"**{start} - {end}**: {segment['text']}")
 
     # Show summary
     if st.session_state.transcription_data:
@@ -42,7 +60,7 @@ def main():
                         st.session_state.memory = summarize_transcription(
                             st.session_state.transcription_data,
                             st.session_state.metadata.get("title"),
-                            api_key=API_KEY
+                            api_key=st.session_state.API_KEY
                         )
                     except Exception as e:
                         st.error(f"Error generating summary: {str(e)}")
@@ -50,7 +68,7 @@ def main():
             st.write(st.session_state.memory)
 
     # Chatbot section
-    st.subheader("🎯 YouTube QA Chatbot")
+    st.subheader("QA Chatbot")
     if st.session_state.qa_chain is None:
         st.warning("Please process a video first to enable the chatbot.")
     else:

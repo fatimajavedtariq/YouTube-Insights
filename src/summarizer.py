@@ -19,7 +19,7 @@ Full Transcription:
 
 Guidelines:
 - Summarize the main points of the video
--Mentiion the title of the video
+-At the top, Video Title: {video_title}
 - Start with 1–2 sentences on overall theme
 - Then list 3–6 bullet points in order of appearance
 - No filler words, irrelevant tangents, or repeated phrases
