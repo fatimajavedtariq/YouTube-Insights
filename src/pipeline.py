@@ -31,6 +31,10 @@ def process_video(url, API_KEY, use_openai_whisper):
                     apikey=API_KEY if use_openai_whisper else None,
                     use_openai_whisper=use_openai_whisper
                 )
+
+                if "transcription" not in st.session_state:
+                    st.session_state.transcription = st.session_state.transcription_data
+
                 progress_container.success("✅ Step 2/3: Transcription completed.")
             except Exception as e:
                 progress_container.error(f"❌ Step 2/3: Transcription failed: {str(e)}")

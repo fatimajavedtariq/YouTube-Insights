@@ -32,5 +32,6 @@ def transcribe(audio_path, apikey=None, use_openai_whisper=False, cleanup_temp=T
                 "start": format_timestamp(segment.start),
                 "end": format_timestamp(segment.end),
                 "text": segment.text
-            })        
+            })
+            
     return transcription_data

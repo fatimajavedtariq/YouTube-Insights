@@ -40,19 +40,14 @@ def main():
     # Process video
     if process_button and st.session_state.vectorstore is None:
         process_video(url, st.session_state.API_KEY, use_openai_whisper)
-
-    if st.session_state.transcription_data:
-        with st.expander("Video Transcription", expanded=False):
-            if "transcription" not in st.session_state:
-                st.session_state.transcription = st.session_state.transcription_data
-            
-            for segment in st.session_state.transcription:
-                start = segment['start']
-                end = segment['end']
-                st.markdown(f"**{start} - {end}**: {segment['text']}")
+        
 
     # Show summary
     if st.session_state.transcription_data:
+        with st.expander("📜 Video Transcription", expanded=False):
+            if st.session_state.memory is None:
+                for segment in st.session_state.transcription:
+                    st.markdown(f"**{segment['start']} - {segment['end']}**: {segment['text']}")
         with st.expander("Video Summary", expanded=False):
             if st.session_state.memory is None:
                 with st.spinner("Generating summary..."):
