@@ -46,7 +46,7 @@ def main():
     if st.session_state.transcription_data:
         with st.expander("📜 Video Transcription", expanded=False):
             if st.session_state.memory is None:
-                for segment in st.session_state.transcription:
+                for segment in st.session_state.transcription_data:
                     st.markdown(f"**{segment['start']} - {segment['end']}**: {segment['text']}")
         with st.expander("Video Summary", expanded=False):
             if st.session_state.memory is None:

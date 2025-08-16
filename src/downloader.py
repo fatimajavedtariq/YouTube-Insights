@@ -2,53 +2,47 @@ import os
 import yt_dlp
 import tempfile
 import shutil
-import traceback
+import streamlit as st
 
 def download_youtube_audio(url):
     tmpdir = tempfile.mkdtemp()
 
+    # Load cookies from Streamlit secrets
+    cookies_path = None
+    if "cookies" in st.secrets:
+        cookies_path = os.path.join(tmpdir, "cookies.txt")
+        with open(cookies_path, "w", encoding="utf-8") as f:
+            f.write(st.secrets["cookies"])
+
     ydl_opts = {
-        "format": "bestaudio/best",
-        "outtmpl": os.path.join(tmpdir, "%(title)s.%(ext)s"),
-        "restrictfilenames": True,
-        "noplaylist": True,
-        "ignoreerrors": True,
-        "quiet": True,
-        "no_warnings": True,
-        "geo_bypass": True,
-        "postprocessors": [{
-            "key": "FFmpegExtractAudio",
-            "preferredcodec": "mp3",
-            "preferredquality": "192",
+        'format': 'bestaudio/best',
+        'outtmpl': os.path.join(tmpdir, '%(title)s.%(ext)s'),
+        'restrictfilenames': True,
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
         }],
     }
 
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
+    # If cookies exist, add to yt-dlp opts
+    if cookies_path:
+        ydl_opts['cookiefile'] = cookies_path
 
-            if not info:
-                raise ValueError("Failed to retrieve video info. Possibly private, age-restricted, or geo-blocked.")
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=True)
+        file_path = ydl.prepare_filename(info)  # Actual file path
+        file_path = os.path.splitext(file_path)[0] + ".mp3"  # Ensure mp3 extension
 
-            file_path = ydl.prepare_filename(info)
-            file_path = os.path.splitext(file_path)[0] + ".mp3"  # ensure mp3
+    metadata = {
+        "title": info.get("title"),
+        "description": info.get("description"),
+        "uploader": info.get("uploader"),
+        "upload_date": info.get("upload_date"),
+        "duration": info.get("duration"),
+        "view_count": info.get("view_count"),
+        "like_count": info.get("like_count"),
+        "channel_id": info.get("channel_id"),
+        "webpage_url": info.get("webpage_url")
+    }
 
-        metadata = {
-            "title": info.get("title"),
-            "description": info.get("description"),
-            "uploader": info.get("uploader"),
-            "upload_date": info.get("upload_date"),
-            "duration": info.get("duration"),
-            "view_count": info.get("view_count"),
-            "like_count": info.get("like_count"),
-            "channel_id": info.get("channel_id"),
-            "webpage_url": info.get("webpage_url"),
-        }
-
-        return file_path, metadata, tmpdir
-
-    except Exception as e:
-        # Print full error to logs (so Streamlit doesn't redact it)
-        print("yt_dlp download error:", traceback.format_exc())
-        shutil.rmtree(tmpdir, ignore_errors=True)
-        raise
+    return file_path, metadata, tmpdir
